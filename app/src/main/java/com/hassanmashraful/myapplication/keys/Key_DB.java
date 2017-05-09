@@ -8,13 +8,15 @@ public class Key_DB {
 
     // All Static variables
     // Database Version
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     // Database Name
     public static final String DATABASE_NAME = "android_api";
 
     // Login table name
     public static final String TABLE_SMS_REPORT = "sms_report";
+
+    public static final String TABLE_SMS_PENDING = "sms_pending";
 
     // Login Table Columns names
     public static final String KEY_ID = "id";
@@ -23,6 +25,8 @@ public class Key_DB {
     public static final String KEY_STATUS = "status";
 
     public static final String SMS_INFO_CREATE_QUERY = "CREATE TABLE "+ TABLE_SMS_REPORT +"("+ KEY_ID+" TEXT,"+ KEY_NUMBER +" TEXT,"+ KEY_SMS +" TEXT,"+ KEY_STATUS +" TEXT);";
+
+    public static final String SMS_PENDING_CREATE_QUERY = "CREATE TABLE "+ TABLE_SMS_PENDING +"("+ KEY_ID+" TEXT,"+ KEY_NUMBER +" TEXT,"+ KEY_SMS +" TEXT);";
 
 
 
