@@ -1,5 +1,6 @@
 package com.hassanmashraful.myapplication;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,9 +8,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,7 +23,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.hassanmashraful.myapplication.activity.Admin_Activity;
+import com.hassanmashraful.myapplication.activity.MainMenu;
 import com.hassanmashraful.myapplication.content.UserInfo;
+import com.hassanmashraful.myapplication.dbhelper.SQLiteHelper;
 import com.hassanmashraful.myapplication.keys.Key_Value;
 import com.hassanmashraful.myapplication.network.VolleySingleton;
 
@@ -36,14 +44,17 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    RequestQueue requestQueue;
+    private RequestQueue requestQueue;
 
-    ArrayList<UserInfo> userInfos = new ArrayList<>();
+    private ArrayList<UserInfo> userInfos = new ArrayList<>();
 
     private static MainActivity sInstance;
 
-    VolleySingleton volleySingleton;
+    private VolleySingleton volleySingleton;
+    private SQLiteHelper db;
 
+    private static int deliverCount = 0, queueCount = 0;
+    private TextView countShow, queueShow;
     public static Context getAppContext() {
         return sInstance.getApplicationContext();
     }
@@ -55,8 +66,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+        db = new SQLiteHelper(this);
+
         sInstance = this;
 
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+
+        countShow = (TextView) findViewById(R.id.countShow);
+        queueShow = (TextView) findViewById(R.id.queueShow);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Timer to getting data from aerver by calling callingHOST();
         final Handler handleTWO = new Handler();
@@ -104,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     //getting data from server
     public void callingHOST(){
 
-
+        db.addPendingSMS("1","2","1");
         volleySingleton = volleySingleton.getInstance();  requestQueue = volleySingleton.getRequestQueue();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Key_Value.URL_GET_DATA, (String)null, new Response.Listener<JSONObject>() {
@@ -143,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
                     String status = currentData.getString(Key_Value.KEY_STATUS);
 
                     userInfos.add(new UserInfo(id, number, sms, status)); //adding data to arraylist
+                    db.addPendingSMS(id, number, sms);
+                    queueCount++;
 
                 }
                 for (int m = 0; m<jsonArray.length(); m++)
@@ -153,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        queueShow.setText(String.valueOf(queueCount));
 
     }
 
@@ -200,6 +223,9 @@ public class MainActivity extends AppCompatActivity {
         // Adding request to request queue
         requestQueue.add(strReq);
         Log.v("SMS RESPONSE  ", number+" %%%%");
+        //deliverCount++;
+        if (queueCount>0)queueCount--;
+        queueShow.setText(String.valueOf(queueCount));
 
 
     }
@@ -250,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (result.equals("1")){
                     Log.v("SAVING DATA ********  ", id+" %%%%");
+
                     save(id, number, message, status);
                 }
 
@@ -281,6 +308,8 @@ public class MainActivity extends AppCompatActivity {
             {
                 //Use iterator to remove this User object.
                 iter.remove();
+                ++deliverCount;
+                countShow.setText(String.valueOf(deliverCount));
                 Log.v("REMOVED  ", id+" %%%%");
             }
         }
@@ -289,7 +318,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(MainActivity.this, MainMenu.class);
+        startActivity(intent);
+        Log.v("abck", "main menu");
+        finish();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_sms, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+         int id = item.getItemId();
+        /*if (id == R.id.home) {
+            onBackPressed();
+        }*/
+        switch (id){
+            case R.id.home:
+                onBackPressed(); break;
 
+            case R.id.admin:
+                Intent intent = new Intent(MainActivity.this, Admin_Activity.class);
+                startActivity(intent);
+                Log.v("abck", "main menu");
+                finish();
+
+                default:
+                    break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

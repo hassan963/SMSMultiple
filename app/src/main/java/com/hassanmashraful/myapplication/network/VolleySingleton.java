@@ -6,7 +6,7 @@ import android.util.LruCache;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-import com.hassanmashraful.myapplication.MainActivity;
+import com.hassanmashraful.myapplication.activity.MainMenu;
 
 /**
  * Created by Windows on 30-01-2015.
@@ -16,7 +16,7 @@ public class VolleySingleton {
     private ImageLoader mImageLoader;
     private RequestQueue mRequestQueue;
     private VolleySingleton(){
-        mRequestQueue=Volley.newRequestQueue(MainActivity.getAppContext());
+        mRequestQueue=Volley.newRequestQueue(MainMenu.getAppContext());
         mImageLoader=new ImageLoader(mRequestQueue,new ImageLoader.ImageCache() {
 
             private LruCache<String, Bitmap> cache=new LruCache<>((int)(Runtime.getRuntime().maxMemory()/1024)/8);
