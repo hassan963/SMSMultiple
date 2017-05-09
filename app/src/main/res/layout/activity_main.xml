@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -19,5 +19,37 @@
         android:textColor="#FF8A80"
         android:textSize="25sp"/>
 
+    <TextView android:id="@+id/smsSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF8A80"
+        android:layout_below="@id/output"
+        android:text="Delivered SMS: "
+        android:textSize="25sp"/>
 
-</LinearLayout>
+    <TextView android:id="@+id/countShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF8A80"
+        android:layout_toRightOf="@id/smsSend"
+        android:layout_below="@id/output"
+        android:textSize="25sp"/>
+
+    <TextView android:id="@+id/queueSms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF8A80"
+        android:layout_below="@id/smsSend"
+        android:text="Queue SMS: "
+        android:textSize="25sp"/>
+
+    <TextView android:id="@+id/queueShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF8A80"
+        android:layout_toRightOf="@id/queueSms"
+        android:layout_below="@id/countShow"
+        android:textSize="25sp"/>
+
+
+</RelativeLayout>
